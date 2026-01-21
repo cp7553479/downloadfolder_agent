@@ -1,0 +1,9 @@
+# Ignore all directories
+*/
+
+# Whitelist specific directories
+!.agent/
+!.cursor/
+!.claude/
+!.AGENT.md
+!.CLAUDE.md
