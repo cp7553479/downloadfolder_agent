@@ -5,5 +5,7 @@
 !.agent/
 !.cursor/
 !.claude/
+!.gemini/
+!.AGENTS.md
 !.AGENT.md
 !.CLAUDE.md
