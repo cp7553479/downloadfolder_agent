@@ -1,9 +1,7 @@
 ---
-name: Browser Automation
+name: Midscene Browser/Computer Automation
 description: |
-  Vision-driven browser automation using Midscene. Operates entirely from screenshots — no DOM or accessibility labels required. Can interact with all visible elements on screen regardless of technology stack.
-
-  Opens a new browser tab for each target URL via Puppeteer (headless Chrome).
+  Vision-driven browser/computer automation using Midscene. Operates entirely from screenshots — no DOM or accessibility labels required. Can interact with all visible elements on screen regardless of technology stack.
 
   Use this skill when the user wants to:
   - Browse, navigate, or open web pages
@@ -13,7 +11,9 @@ description: |
   - Take screenshots of web pages
   - Automate multi-step web workflows
   - Run browser automation or check website content
-
+  - open app, press key, desktop, computer, click on screen, type text, screenshot desktop,
+  launch application, switch window, desktop automation, control computer, mouse click, keyboard shortcut,
+  screen capture, find on screen, read screen, verify window, close app, minimize window, maximize window
 
   Powered by Midscene.js (https://midscenejs.com)
 allowed-tools:
@@ -28,7 +28,7 @@ allowed-tools:
 > 2. **Run only one midscene command at a time.** Wait for the previous command to finish, read the screenshot, then decide the next action. Never chain multiple commands together.
 > 3. **Allow enough time for each command to complete.** Midscene commands involve AI inference and screen interaction, which can take longer than typical shell commands. A typical command needs about 1 minute; complex `act` commands may need even longer.
 
-Automate web browsing using `npx @midscene/web@1`. Launches a headless Chrome via Puppeteer that **persists across CLI calls** — no session loss between commands. Each CLI command maps directly to an MCP tool — you (the AI agent) act as the brain, deciding which actions to take based on screenshots.
+Automate web browsing using `npx @midscene/web@1`. Launches a headless Chrome via Puppeteer that **persists across CLI calls** — no session loss between commands. Each CLI command maps directly to an MCP tool — you (the AI agent) act as the brain, deciding which actions to take based on the task target.
 
 ## When to Use
 
@@ -38,49 +38,8 @@ Use this skill when:
 - You want to verify or test frontend UI behavior
 - The user wants screenshots of web pages
 
-If you need to preserve login sessions or work with the user's existing browser tabs, use the **Chrome Bridge Automation** skill instead.
+If you need to preserve login sessions or work with the user's existing browser tabs, use the **Chrome Bridge Automation** skill instead. Read [chrome-bridge/SKILL.md](./chrome-bridge/SKILL.md) for Chrome Bridge Automation.
 
-## Prerequisites
-
-Midscene requires models with strong visual grounding capabilities. The following environment variables must be configured — either as system environment variables or in a `.env` file in the current working directory (Midscene loads `.env` automatically):
-
-```bash
-MIDSCENE_MODEL_API_KEY="your-api-key"
-MIDSCENE_MODEL_NAME="model-name"
-MIDSCENE_MODEL_BASE_URL="https://..."
-MIDSCENE_MODEL_FAMILY="family-identifier"
-```
-
-Example: Gemini (Gemini-3-Flash)
-
-```bash
-MIDSCENE_MODEL_API_KEY="your-google-api-key"
-MIDSCENE_MODEL_NAME="gemini-3-flash"
-MIDSCENE_MODEL_BASE_URL="https://generativelanguage.googleapis.com/v1beta/openai/"
-MIDSCENE_MODEL_FAMILY="gemini"
-```
-
-Example: Qwen3-VL
-
-```bash
-MIDSCENE_MODEL_API_KEY="your-openrouter-api-key"
-MIDSCENE_MODEL_NAME="qwen/qwen3-vl-235b-a22b-instruct"
-MIDSCENE_MODEL_BASE_URL="https://openrouter.ai/api/v1"
-MIDSCENE_MODEL_FAMILY="qwen3-vl"
-```
-
-Example: Doubao Seed 1.6
-
-```bash
-MIDSCENE_MODEL_API_KEY="your-doubao-api-key"
-MIDSCENE_MODEL_NAME="doubao-seed-1-6-250615"
-MIDSCENE_MODEL_BASE_URL="https://ark.cn-beijing.volces.com/api/v3"
-MIDSCENE_MODEL_FAMILY="doubao-vision"
-```
-
-Commonly used models: Doubao Seed 1.6, Qwen3-VL, Zhipu GLM-4.6V, Gemini-3-Pro, Gemini-3-Flash.
-
-If the model is not configured, ask the user to set it up. See [Model Configuration](https://midscenejs.com/model-common-config) for supported providers.
 
 ## Commands
 
@@ -89,6 +48,14 @@ If the model is not configured, ask the user to set it up. See [Model Configurat
 ```bash
 npx @midscene/web@1 connect --url https://example.com
 ```
+
+Or just connect to the current page without specifying the URL:
+
+```bash
+npx @midscene/web@1 connect
+```
+
+When you continue the task, and the npx @midscene/web@1 close command is not executed, the browser will keep running in the background, so you can connect without the --url parameter.
 
 ### Take Screenshot
 
@@ -104,11 +71,15 @@ Use `act` to interact with the page and get the result. It autonomously handles 
 
 ```bash
 # specific instructions
+npx @midscene/web@1 act --prompt "open the website https://www.google.com"
 npx @midscene/web@1 act --prompt "click the Login button and fill in the email field with 'user@example.com'"
 npx @midscene/web@1 act --prompt "scroll down and click the Submit button"
 
 # or target-driven instructions
-npx @midscene/web@1 act --prompt "click the country dropdown and select Japan"
+npx @midscene/web@1 act --prompt "open the website https://www.google.com and Login with 'user@example.com'"
+
+# The BEST PRACTICE instructions(detailed in a single act command)
+npx @midscene/web@1 act --prompt "open the website https://www.google.com, then click the Login button and fill in the email field with 'user@example.com', then scroll down and click the Submit button"
 ```
 
 ### Disconnect
@@ -132,9 +103,8 @@ npx @midscene/web@1 close
 The browser **persists across CLI calls** via a background Chrome process. Follow this pattern:
 
 1. **Connect** to a URL to open a new tab
-2. **Take screenshot** to see the current state, make sure the page is loaded.
-3. **Execute action** using `act` to perform the desired action or target-driven instructions.
-4. **Close** the browser when done (or **disconnect** to keep it for later)
+2. **Execute action** using `act` to perform the desired action or target-driven instructions.
+3. **Close** the browser when all the tasks are done (or **disconnect** to keep it for later)
 
 ## Best Practices
 
@@ -144,7 +114,7 @@ The browser **persists across CLI calls** via a background Chrome process. Follo
 4. **Handle loading states**: After navigation or actions that trigger page loads, take a screenshot to verify the page has loaded.
 5. **Close when done**: Use `close` to shut down the browser and free resources.
 6. **Never run in background**: Every midscene command must run synchronously — background execution breaks the screenshot-analyze-act loop.
-7. **Batch related operations into a single `act` command**: When performing consecutive operations within the same page, combine them into one `act` prompt instead of splitting them into separate commands. For example, "fill in the email and password fields, then click the Login button" should be a single `act` call, not three. This reduces round-trips, avoids unnecessary screenshot-analyze cycles, and is significantly faster.
+7. **Batch related operations into a single `act` command**: When performing consecutive operations within the same page, combine them into one `act` prompt instead of splitting them into separate commands. For example, "fill in the email and password fields, then click the Login button" should be a single `act` call, not three. This reduces round-trips, avoids unnecessary screenshot-analyze cycles, and is significantly faster. Try to describe the operations in a single `act` command as much as possible, if you cannot determine the specific operations, you can describe the purpose in a single `act` command, let @midscene/web@1 analyze and execute the operations by itself.
 8. **Summarize report files after completion**: After finishing the automation task, collect and summarize all report files (screenshots, logs, output files, etc.) for the user. Present a clear summary of what was accomplished, what files were generated, and where they are located, making it easy for the user to review the results.
 
 **Example — Dropdown selection:**
@@ -163,6 +133,21 @@ npx @midscene/web@1 take_screenshot
 
 ## Troubleshooting
 
+### Miss MIDSCENE_MODEL_API_KEY
+Midscene requires models with strong visual grounding capabilities. The following environment variables must be configured — either as system environment variables or in a `.env` file in the current working directory (Midscene loads `.env` automatically):
+
+```bash
+MIDSCENE_MODEL_API_KEY="your-api-key"
+MIDSCENE_MODEL_NAME="model-name"
+MIDSCENE_MODEL_BASE_URL="https://..."
+MIDSCENE_MODEL_FAMILY="family-identifier"
+```
+MIDSCENE_MODEL_FAMILY: the family of the model, such as gemini, "qwen3-vl", "qwen2.5-vl", "doubao-vision","glm-v","auto-glm","auto-glm-multilingual","vlm-ui-tars-doubao-1.5". This parameter is used to adapt to the interfaces of different models.
+
+Commonly used models: Doubao Seed 1.6, Qwen3-VL, Zhipu GLM-4.6V, Gemini-3-Pro, Gemini-3-Flash.
+
+If the model is not configured, ask the user to set it up. See [Model Configuration](https://midscenejs.com/model-common-config) for supported providers.
+
 ### Connection Failures
 - Ensure Chrome/Chromium is installed on the system (Puppeteer downloads its own by default).
 - Check that no firewall blocks local Chrome debugging ports.
@@ -177,3 +162,7 @@ npx @midscene/web@1 take_screenshot
 
 ### Screenshots Not Displaying
 - The screenshot path is an absolute path to a local file. Use the Read tool to view it.
+
+# Computer Automation
+
+Read [computer-automation/SKILL.md](./computer-automation/SKILL.md) for computer automation.
