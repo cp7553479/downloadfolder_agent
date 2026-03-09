@@ -1,5 +1,8 @@
 # Ignore all directories
 /*
+.env
+.env.local
+*/.env
 
 # Whitelist specific directories
 !.agent/
