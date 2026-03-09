@@ -1,6 +1,6 @@
 ---
-name: creator-image
-description: Workflow to generate E-commerce product images batch by batch using Coze API.
+name: ASI-image-creator
+description: Workflow to generate ASI product images batch by batch using Coze API.
 ---
 
 The user will provide a path to a folder containing product images. The folder name is the prompt for the image generation unless user required.

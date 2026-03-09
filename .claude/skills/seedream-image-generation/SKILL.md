@@ -1,6 +1,6 @@
 ---
 name: seedream-image-generation
-description: Image generation via Volcengine Seedream API. Use this when you need to perform Text-to-Image (T2I), Image-to-Image (I2I), or general visual creative tasks based on textual or visual inputs.
+description: Image generation via Volcengine Seedream API. Use this when you need to perform Text-to-Image (T2I), Image-to-Image (I2I),使用豆包生图 or general visual creative tasks based on textual or visual inputs.
 ---
 
 # Seedream Image Generation Skill
